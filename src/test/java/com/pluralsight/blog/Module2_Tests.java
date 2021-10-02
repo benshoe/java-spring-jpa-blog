@@ -1,9 +1,27 @@
 package com.pluralsight.blog;
 
-import com.pluralsight.blog.data.CategoryRepository;
-import com.pluralsight.blog.data.PostRepository;
-import com.pluralsight.blog.model.Category;
-import com.pluralsight.blog.model.Post;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,23 +38,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import java.io.*;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import com.pluralsight.blog.data.CategoryRepository;
+import com.pluralsight.blog.data.PostRepository;
+import com.pluralsight.blog.model.Category;
+import com.pluralsight.blog.model.Post;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -206,6 +211,8 @@ public class Module2_Tests {
             final String output = "";
             List<String> allLines = Files.readAllLines(path);
             result = String.join("\n", allLines);
+            result = result.replaceAll(" ", "");
+
         } catch (IOException e) {
             //e.printStackTrace();
         }
@@ -214,11 +221,12 @@ public class Module2_Tests {
         ClassLoader classLoader = getClass().getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream("data-categories.sql")) {
             resultResource = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            resultResource = resultResource.replaceAll(" ", "");
         } catch (IOException e) {
             //e.printStackTrace();
         }
 
-        assertTrue("Task 6: The `data.sql` file is not the same as `data-categories.sql`.", resultResource.equals(result));
+        assertEquals("Task 6: The `data.sql` file is not the same as `data-categories.sql`.", resultResource, result);
     }
 
     @Test
